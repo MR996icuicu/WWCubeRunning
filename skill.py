@@ -186,7 +186,8 @@ class KeLaiTaSkill(Skill):
         if stat['simulator'].stat['is_first_round']:
             return forward_steps
 
-        logger.debug(f'{player} 发动技能, 背着其他人执行两倍的步数 {forward_steps*2}!')
+        other_players = stat['board'].stacks[player.position]
+        logger.debug(f'{player} 发动技能, 背着 {other_players} 执行两倍的步数 {forward_steps*2}!')
         forward_steps *= 2
         stat['simulator'].stat['override_forward_steps'] = forward_steps
         return forward_steps

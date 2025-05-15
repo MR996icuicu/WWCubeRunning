@@ -75,9 +75,10 @@ class Player:
 
         forward_steps = min(forward_steps, board.length-self.position)
         board.stacks[self.position].remove(self)
+        origin_position = self.stat['position']
         self.stat['position'] += forward_steps
         board.stacks[self.position].append(self)
-        logger.debug(f"{self} 前进 {forward_steps} 步, 到 {self.position}, 同位置其他人(从下到上): {board.stacks[self.position]}")
+        logger.debug(f"{self} 前进 {forward_steps} 步, 从 {origin_position} 到 {self.position}, 同位置其他人(从下到上): {board.stacks[self.position]}")
         return
     
     def __repr__(self):

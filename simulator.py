@@ -120,9 +120,9 @@ class GameSimulator:
                 SKILL_PRIORITY.AFTER_MOVE, each_player, 
                 after_move_stat=dict(simulator=self, board=self.board)
             )
-            # 清空柯莱塔技能的覆盖效果, 只在当前回合中有效
-            if self.stat.get('override_forward_steps', None) is not None:
-                del self.stat['override_forward_steps']
+        # 清空柯莱塔技能的覆盖效果, 只在当前回合中有效
+        if self.stat.get('override_forward_steps', None) is not None:
+            del self.stat['override_forward_steps']
             
     def random_order(self, ):
         """随机产生一个执行顺序, 但是第一轮的顺序是固定的"""
