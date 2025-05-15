@@ -33,14 +33,15 @@ if __name__ == "__main__":
     sim = GameSimulator(
         board_length=24,
         players=[
-            
+            # 15日比赛顺序, 按照14日比赛名次顺序
+            # 名称, 黑马值, 技能(概率)
             Player("卡卡罗", 1.28, KaKaLuoSkill(1.0)),
-            Player("守岸人", 1.17, ShouAnRenSkill(1.0)),
-            Player("椿", 1.3, ChunSkill(0.5)),
-            Player("珂莱塔", 1.74, KeLaiTaSkill(1.0)),
-            Player("今汐", 1.1, JinXiSkill(0.4)),
+            Player("珂莱塔", 1.74, KeLaiTaSkill(0.28)),
             Player("长离", 1.6, ChangLiSkill(0.65)),
+            Player("今汐", 1.1, JinXiSkill(0.4)),
+            Player("椿", 1.3, ChunSkill(0.5)),
+            Player("守岸人", 1.17, ShouAnRenSkill(1.0)),
         ],
     )
     # 指定次数
-    results = sim.simulate(n_runs=100)
+    results = sim.simulate(n_runs=1000)
