@@ -48,7 +48,7 @@ class Player:
         }   # 统计一些状态
     
     def __hash__(self):
-        return str(self)
+        return hash(str(self))
     
     def __eq__(self, value):
         return isinstance(value, Player) and str(self) == str(value)

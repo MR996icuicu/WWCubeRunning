@@ -20,13 +20,8 @@
 - 📊 支持批量模拟与胜率统计
 - ⚙️ 可配置赛道长度、技能参数等
 
-## 快速开始
-
-### 安装依赖
-```bash
-pip install -r requirements.txt  # 本项目仅需Python标准库
-
 ## 目录结构
+```text
 .
 ├── LICENSE
 ├── README.md
@@ -36,8 +31,48 @@ pip install -r requirements.txt  # 本项目仅需Python标准库
 ├── ops.py          # 常规操作方法
 ├── player.py       # 选手定义
 ├── simulator.py    # 比赛流程控制
-└── sill.py         # 技能系统于技能注册工厂
+└── sill.py         # 技能系统与技能注册工厂
 ```
+
+## 快速开始
+
+### 安装依赖
+```bash
+pip install -r requirements.txt  # 本项目仅需Python标准库
+```
+
+### 配置main.py
+根据需要配置`main.py`中的player数量
+```python
+logger.setLevel(logging.INFO)
+
+sim = GameSimulator(
+    board_length=24,
+    players=[
+        # 15日比赛顺序, 按照14日比赛名次顺序
+        # 名称, 黑马值, 技能(概率)
+        Player("卡卡罗", 1.28, KaKaLuoSkill(1.0)),
+        Player("珂莱塔", 1.74, KeLaiTaSkill(0.28)),
+        Player("长离", 1.6, ChangLiSkill(0.65)),
+        Player("今汐", 1.1, JinXiSkill(0.4)),
+        Player("椿", 1.3, ChunSkill(0.5)),
+        Player("守岸人", 1.17, ShouAnRenSkill(1.0)),
+    ],
+)
+
+# 指定次数
+results = sim.simulate(n_runs=200)
+```
+
+### 执行
+```shell
+python main.py
+```
+
+### 新增技能
+在`skill.py`中可以新增技能, **<font color=red>所有技能务必:</font>**
+  1. 绑定触发时机`SKILL_PRIORITY`, 目前提供10种触发时机
+  2. 继承`Skill`抽象类并重写`_apply()`方法
 
 
 ## ✨ 原创性声明  

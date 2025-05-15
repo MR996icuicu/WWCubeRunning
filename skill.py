@@ -17,7 +17,7 @@ from __future__ import annotations
 import enum
 from copy import deepcopy
 from collections import defaultdict
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Type, Dict, List
 
 import numpy as np
@@ -41,8 +41,8 @@ class SKILL_PRIORITY(enum.Enum):
     AFTER_ROUND     = 90    # 当前轮次结束后
 
 
-class Skill:
-    """所有技能的基类，定义触发时机和触发概率，并提供触发判定和效果应用接口。
+class Skill(ABC):
+    """所有技能的抽象类，定义触发时机和触发概率，并提供触发判定和效果应用接口。
 
     Attributes:
         name: 技能名称。
@@ -123,6 +123,7 @@ class ChangLiSkill(Skill):
             logger.debug(f"{player} 发动技能最后一个执行回合! 原始顺序 {origin_order}, 新顺序 {simulator_order}")
         return
 
+
 @register_skill
 class KaKaLuoSkill(Skill):
     """若玩家目前排名最后，开始移动时额外前进3步。**在每回合移动时触发**"""
@@ -140,6 +141,7 @@ class KaKaLuoSkill(Skill):
             logger.debug(f'{player} 发动技能, 由于进度最后多执行3步!')
             return forward_steps + 3
         return forward_steps
+
 
 @register_skill
 class ShouAnRenSkill(Skill):
@@ -173,6 +175,7 @@ class ChunSkill(Skill):
             logger.debug(f'{player} 发动技能, 多执行 {extra_steps}步!')
         return forward_steps
 
+
 @register_skill
 class KeLaiTaSkill(Skill):
     """玩家有概率执行第二次相同点数的移动。但是会带着别人一起移动**在每回合移动后触发,不可递归触发**"""
@@ -191,6 +194,7 @@ class KeLaiTaSkill(Skill):
         forward_steps *= 2
         stat['simulator'].stat['override_forward_steps'] = forward_steps
         return forward_steps
+
 
 if __name__ == "__main__":
     print(SKILL_FACTORY)

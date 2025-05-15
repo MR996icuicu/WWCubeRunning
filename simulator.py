@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 import logging
-from typing import List, Dict, Optional, Callable, Any, Any
+from typing import List, Dict, Any, Tuple
 from collections import defaultdict
 
 import numpy as np
@@ -193,7 +193,7 @@ class GameSimulator:
         
                 
 
-    def simulate(self, n_runs: int = 10000) -> Dict[str, float]:
+    def simulate(self, n_runs: int = 10000) -> List[Tuple[Player, float, float]]:
         """
         执行多次模拟实验，统计各玩家的胜率。
 
@@ -201,14 +201,14 @@ class GameSimulator:
             n_runs: 模拟次数。
 
         Returns:
-            胜率字典，键为玩家名称，值为胜率。
+            元组组成的列表, 包含玩家名称，胜率和收益期望
         """
-        win_counts: Dict[str, float] = defaultdict(float)
+        win_counts: Dict[Player, float] = defaultdict(float)
 
         for run in range(1, n_runs + 1):
 
             winner = self.play()
-            win_counts[str(winner)] += 1
+            win_counts[winner] += 1
 
             if logger.level <= logging.DEBUG:
                 ranks = sorted(self.players, key=lambda p: p.position, reverse=True)
@@ -221,6 +221,8 @@ class GameSimulator:
                 if run % 1000 == 0:
                     logger.info(f"已完成 {run}/{n_runs} 次模拟")
 
-        result = {name: count / n_runs for name, count in win_counts.items()}
-        logger.info(f"模拟结束 | 估计夺冠概率 | {result}")
-        return result
+        results = [ (player, count / n_runs, player.score * count / n_runs) for player, count in win_counts.items() ]
+        logger.info(f"模拟结束 | (夺冠概率, 收益期望, 玩家) 如下:")
+        for player, win_rate, return_estimation in results:
+            logger.info(f"{win_rate:.4f}, {return_estimation:.4f}, {str(player):<4s}")
+        return results

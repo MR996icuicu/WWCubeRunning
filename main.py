@@ -28,7 +28,7 @@ from ops import logger
 
 if __name__ == "__main__":
 
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     sim = GameSimulator(
         board_length=24,
@@ -44,4 +44,5 @@ if __name__ == "__main__":
         ],
     )
     # 指定次数
-    results = sim.simulate(n_runs=1000)
+    results = sim.simulate(n_runs=200)
+    
