@@ -27,7 +27,6 @@
 pip install -r requirements.txt  # 本项目仅需Python标准库
 
 ## 目录结构
-```text
 .
 ├── LICENSE
 ├── README.md
@@ -50,3 +49,4 @@ pip install -r requirements.txt  # 本项目仅需Python标准库
 提交PR前请：  
 1. 签署开发者原创性声明（[DCO](https://developercertificate.org/)）  
 2. 在此仓库中提`pull request`, 在活动期间作者会定时查看
+3. 任何问题和bug请提`issue`
