@@ -66,12 +66,13 @@ class Player:
         return dice_value
     
     def move(self, forward_steps: int, board: Board, *args, **kwargs):
-        forward_steps = call_hook(
-            SKILL_PRIORITY.ON_MOVE, self, 
-            on_move_stat=dict(
-                board=board, forward_steps=forward_steps, simulator=kwargs['simulator']
-            )
-        ) or forward_steps
+        if kwargs.get("enable_skill", True):
+            forward_steps = call_hook(
+                SKILL_PRIORITY.ON_MOVE, self, 
+                on_move_stat=dict(
+                    board=board, forward_steps=forward_steps, simulator=kwargs['simulator']
+                )
+            ) or forward_steps
 
         forward_steps = min(forward_steps, board.length-self.position)
         board.stacks[self.position].remove(self)
