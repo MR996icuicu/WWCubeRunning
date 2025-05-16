@@ -109,7 +109,7 @@ class GameSimulator:
         
         # 更新这些玩家的位置
         for player_idx, each_player in enumerate(forward_players):
-            # 柯莱塔技能会覆盖她后面所有角色的步数
+            # 部分技能会覆盖一起移动的所有角色的步数
             forward_steps_ = self.stat.get('override_forward_steps', None) or forward_steps
             # 只有最下方的团子可以发动技能
             # 因为上方的团子是被带动的
@@ -125,7 +125,7 @@ class GameSimulator:
                     SKILL_PRIORITY.AFTER_MOVE, each_player, 
                     after_move_stat=dict(simulator=self, board=self.board)
                 )
-        # 清空柯莱塔技能的覆盖效果, 只在当前回合中有效
+        # 清空可以覆盖后续player步数的技能的覆盖效果, 只在当前回合中有效
         if self.stat.get('override_forward_steps', None) is not None:
             del self.stat['override_forward_steps']
             

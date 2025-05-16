@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Optional, Dict, Any, Type
+from typing import List, Optional, Dict, Any, Type, Tuple
 
 from skill import Skill, SKILL_PRIORITY, SKILL_FACTORY
 from board import Board
@@ -20,24 +20,32 @@ from ops import roll_union_dice, logger
 
 
 def call_hook(priority: SKILL_PRIORITY, player: Type['Player'], *args, **kwargs) -> Any:
-    if not player.skill.__class__ in SKILL_FACTORY[priority]:
-        # logger.debug(f"{player} 没有阶段 {priority} 的技能")
+    if not player.skills:
+        # logger.debug(f"{player} 没有任何技能")
         return
-    return player.call_skill(*args, **kwargs)
+    skill = next(
+        (s for s in player.skills if s.__class__ in SKILL_FACTORY[priority]),
+        None
+    )
+    if skill:
+        return skill(player, *args, **kwargs)
+    # logger.debug(f"{player} 没有阶段 {priority} 的技能")
+    return
 
 
-class Player:
+class Player(object):
     """玩家类，封装选手属性和当前状态。"""
     name: str
     score: float
-    skill: Optional[Skill]
+    skills: Optional[List[Skill]]
     stat: Dict[Any, Any]
+    extra_steps: Optional[Tuple[int, List[int]]]    # 技能带来的后续回合的步数增益以及生效区间
     def __init__(
-        self, name: str, score: float, skill: Optional[Skill]=None
+        self, name: str, score: float=1.0, skills: Optional[List[Skill]]=None
     ) -> None:
         self.name: str = name
         self.score: float = score   # 黑马值
-        self.skill: Optional[Skill] = skill
+        self.skills: Optional[List[Skill]] = skills
         self.reset()
 
 
@@ -46,6 +54,7 @@ class Player:
         self.stat: Dict[Any, Any] = {
             'position': 1   # 起始位置
         }   # 统计一些状态
+        self.extra_steps = None
     
     def __hash__(self):
         return hash(str(self))
@@ -57,22 +66,28 @@ class Player:
     def position(self, ):
         return self.stat['position']
     
-    def call_skill(self, *args, **kwargs):
-        return self.skill(self, *args, **kwargs)
-    
     def roll_dice(self) -> int:
         dice_value = call_hook(SKILL_PRIORITY.ON_ROLL, self) or roll_union_dice()
-
+        logger.debug(f"{self} 投出 {dice_value} 的骰子")
         return dice_value
     
     def move(self, forward_steps: int, board: Board, *args, **kwargs):
+        simulator = kwargs['simulator']
         if kwargs.get("enable_skill", True):
             forward_steps = call_hook(
                 SKILL_PRIORITY.ON_MOVE, self, 
                 on_move_stat=dict(
-                    board=board, forward_steps=forward_steps, simulator=kwargs['simulator']
+                    board=board, forward_steps=forward_steps, simulator=simulator
                 )
             ) or forward_steps
+        
+        # 前几个回合带来的技能增益
+        if (self.extra_steps) and (simulator.stat['round_idx'] in self.extra_steps[1]):
+            forward_steps += self.extra_steps[0]
+            
+        # 之前的技能增益不再生效, 清空
+        if (self.extra_steps) and (simulator.stat['round_idx'] >= max(self.extra_steps[1])):
+            self.extra_steps = None
 
         forward_steps = min(forward_steps, board.length-self.position)
         board.stacks[self.position].remove(self)
