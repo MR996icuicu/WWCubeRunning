@@ -48,8 +48,8 @@ if __name__ == "__main__":
             # Player("守岸人", 1.17, [ShouAnRenSkill(1.0)]),
             Player('洛可可', 1.0, [LuoKeKeSkill(1.0)]),
             Player('布兰特', 1.0, [BuLanTeSkill(1.0)]),
-            Player('赞妮', 1.0, [ZanNiSkill_ON_ROLL(1.0), ZanNiSkill_ON_MOVE(1.0)]),
-            Player('菲比', 1.0, [FeiBiSkill(1.0)])
+            Player('赞妮', 1.0, [ZanNiSkill_ON_ROLL(1.0), ZanNiSkill_ON_MOVE(0.4)]),
+            Player('菲比', 1.0, [FeiBiSkill(0.5)])
         ],
     )
     # 指定次数

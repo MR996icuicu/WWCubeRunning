@@ -190,7 +190,7 @@ class KeLaiTaSkill(Skill):
         if stat['simulator'].stat['is_first_round']:
             return forward_steps
 
-        other_players = stat['board'].stacks[player.position]
+        other_players = stat['board'].stacks[player.position][stat['board'].stacks[player.position].index(player):]
         forward_steps *= 2
         logger.debug(f'{player} 发动技能, 背着 {other_players} 一起前进两倍的步数 {forward_steps}!')
         stat['simulator'].stat['override_forward_steps'] = forward_steps
@@ -211,7 +211,7 @@ class LuoKeKeSkill(Skill):
         if player_order[-1] == player:
             # 覆盖堆叠在上方的所有其他团子的步数
             stat['simulator'].stat['override_forward_steps'] = forward_steps + 2
-            other_players = stat['board'].stacks[player.position]
+            other_players = stat['board'].stacks[player.position][stat['board'].stacks[player.position].index(player):]
             logger.debug(f"{player} 发动技能背着 {other_players} 一起前进 {forward_steps+2} 格!")
             return forward_steps + 2
         return forward_steps
@@ -232,7 +232,7 @@ class BuLanTeSkill(Skill):
         if player_order[0] == player:
             # 覆盖堆叠在上方的所有其他团子的步数
             stat['simulator'].stat['override_forward_steps'] = forward_steps + 2
-            other_players = stat['board'].stacks[player.position]
+            other_players = stat['board'].stacks[player.position][stat['board'].stacks[player.position].index(player):]
             logger.debug(f"{player} 发动技能背着 {other_players} 一起前进 {forward_steps+2} 格!")
             return forward_steps + 2
         return forward_steps
@@ -267,6 +267,7 @@ class ZanNiSkill_ON_ROLL(Skill):
         return dice_value
         
 
+@register_skill
 class ZanNiSkill_ON_MOVE(Skill):
     """开始移动时如果处于堆叠状态,下回合有40%概率额外前进2格"""
     _PRIORITY: SKILL_PRIORITY = SKILL_PRIORITY.BEFORE_MOVE

@@ -83,6 +83,7 @@ class Player(object):
         
         # 前几个回合带来的技能增益
         if (self.extra_steps) and (simulator.stat['round_idx'] in self.extra_steps[1]):
+            logger.debug(f"{self} 由于前几轮技能的影响, 本轮增加 {self.extra_steps[0]} 的步数!")
             forward_steps += self.extra_steps[0]
             
         # 之前的技能增益不再生效, 清空
