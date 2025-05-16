@@ -1,0 +1,21 @@
+# log_style
+style:
+  DEBUG: "italic cyan"
+  INFO: "green"
+  WARNING: "bold yellow"
+  ERROR: "bold red"
+  CRITICAL: "bold magenta"
+
+# ratation
+rotation:
+  logfile_max_size: 5242880  # 5 MB
+  backup_count: 500
+
+# format
+format:
+  MAX_LENGTH_FILENAME:  14     # 文件名最大长度
+  MAX_LENGTH_LINENO:    4      # 行号长度
+  MAX_LENGTH_LEVELNAME: 8      # 等级长度
+  # MAX_LENGTH_MODULE:    12     # 模块名最大长度
+  # MAX_LENGTH_FUNCTION:  16     # 函数名最大长度
+  # MAX_LENGTH_THRED:     10     # 线程名最大长度

@@ -296,8 +296,8 @@ class ZanNiSkill_ON_MOVE(Skill):
             return
         board: Board = stat['board']
         if len(board.stacks[player.position]) > 1:
-            setattr(player, "extra_steps_wrap", (lambda _: 2, (stat['simulator'].stat['round_idx'] + 1, 1)))
-            logger.debug(f'{player} 发动技能, 下回合多执行 2 步!')
+            setattr(player, "extra_steps_wrap", (lambda _: 2 if np.random.random() < 0.4 else 0, (stat['simulator'].stat['round_idx'] + 1, 1)))
+            logger.debug(f'{player} 发动技能, 下回合有40%概率多执行 2 步!')
         
     
 @register_skill

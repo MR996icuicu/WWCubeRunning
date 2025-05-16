@@ -12,22 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import numpy as np
 
 from typing import List, Optional
 
-logging.basicConfig()  # 保证根 logger 有 handler
-logger = logging.getLogger(__name__)
-handler = logging.StreamHandler()
-handler.setFormatter(
-    logging.Formatter(
-        "%(asctime)s | %(levelname)5s | %(filename)12s:%(lineno)4s | %(message)s", datefmt="%H:%M:%S"
-    )
-)
-logger.propagate = False
-logger.handlers.clear()
-logger.addHandler(handler)
+from logger import LoggerSingleton
+
+logger = LoggerSingleton().logger
 
 def roll_union_dice(values: Optional[List[int]]=None) -> int:
     if not values:
