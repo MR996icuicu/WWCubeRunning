@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Optional, Dict, Any, Type, Tuple
+from typing import List, Optional, Dict, Any, Type, Tuple, Callable
 
 from skill import Skill, SKILL_PRIORITY, SKILL_FACTORY
 from board import Board
@@ -39,7 +39,7 @@ class Player(object):
     score: float
     skills: Optional[List[Skill]]
     stat: Dict[Any, Any]
-    extra_steps: Optional[Tuple[int, List[int]]]    # 技能带来的后续回合的步数增益以及生效区间
+    extra_steps_wrap: Optional[Tuple[Callable[..., int], Tuple[int, int]]]    # 技能带来的后续轮(步数增益, (生效轮次, 持续轮数))
     def __init__(
         self, name: str, score: float=1.0, skills: Optional[List[Skill]]=None
     ) -> None:
@@ -54,7 +54,7 @@ class Player(object):
         self.stat: Dict[Any, Any] = {
             'position': 1   # 起始位置
         }   # 统计一些状态
-        self.extra_steps = None
+        self.extra_steps_wrap = None
     
     def __hash__(self):
         return hash(str(self))
@@ -82,13 +82,18 @@ class Player(object):
             ) or forward_steps
         
         # 前几个回合带来的技能增益
-        if (self.extra_steps) and (simulator.stat['round_idx'] in self.extra_steps[1]):
-            logger.debug(f"{self} 由于前几轮技能的影响, 本轮增加 {self.extra_steps[0]} 的步数!")
-            forward_steps += self.extra_steps[0]
+        if (self.extra_steps_wrap) and (simulator.stat['round_idx'] >= self.extra_steps_wrap[1][0]):
+            step_func, (start_round, duration) = self.extra_steps_wrap
+            extra_steps = step_func(None)
+            logger.debug(f"{self} 由于前几轮技能的影响, 本轮增加 {extra_steps} 的步数!")
+            forward_steps += extra_steps
+            duration -= 1
+            self.extra_steps_wrap = (step_func, (start_round, duration))
             
         # 之前的技能增益不再生效, 清空
-        if (self.extra_steps) and (simulator.stat['round_idx'] >= max(self.extra_steps[1])):
-            self.extra_steps = None
+        if (self.extra_steps_wrap) and (self.extra_steps_wrap[1][1] == 0):
+            self.extra_steps_wrap = None
+            logger.debug(f"{self} 前几轮的技能效果到此失效")
 
         forward_steps = min(forward_steps, board.length-self.position)
         board.stacks[self.position].remove(self)

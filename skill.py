@@ -238,20 +238,35 @@ class BuLanTeSkill(Skill):
         return forward_steps
         
 
-# @register_skill
-# class KanTeLeiLaSkill(Skill):
-#     """移动过程中首次遇到团子,和此格子中所有团子堆叠,**在每回合移动时触发,一场比赛只能触发一次**"""
-#     _PRIORITY: SKILL_PRIORITY = SKILL_PRIORITY.ON_MOVE
-#     def __init__(self, probability: float=1.0) -> None:
-#         super().__init__(probability=probability)
-#         self.triggered = False  # 一场比赛只能出发一次
+@register_skill
+class KanTeLeiLaSkill(Skill):
+    """移动过程中首次遇到团子,和此格子中所有团子堆叠,**在每回合移动时触发,一场比赛只能触发一次**"""
+    _PRIORITY: SKILL_PRIORITY = SKILL_PRIORITY.ON_MOVE
+    def __init__(self, probability: float=1.0) -> None:
+        super().__init__(probability=probability)
+        self.triggered = False  # 一场比赛只能出发一次
 
-#     def _apply(self, player: Type['Player'], *args, **kwargs):
+    def _apply(self, player: Type['Player'], *args, **kwargs):
+        stat = kwargs['on_move_stat']
+        board: Board = stat['board']
+        forward_steps: int = stat['forward_steps']
+        # 一场比赛只能出发一次
+        if self.triggered:
+            return forward_steps
+        self.triggered = True
         
-#         # 一场比赛只能出发一次
-#         if self.triggered:
-#             return
-#         self.triggered = True
+        # 找到前进步数可以达到的格子中, 是否有其他角色, 有的话直接进入该格子
+        any_stack_with_players = next(
+            (i for i in range(player.position + 1, player.position + forward_steps + 1)
+            if board.stacks[i]),
+            None
+        )
+        if any_stack_with_players is not None:
+            forward_steps = any_stack_with_players - player.position
+            logger.debug(f"{player} 发动技能, 重写前进步数为 {forward_steps}")
+        
+        return forward_steps
+        
         
 
 @register_skill
@@ -281,7 +296,7 @@ class ZanNiSkill_ON_MOVE(Skill):
             return
         board: Board = stat['board']
         if len(board.stacks[player.position]) > 1:
-            setattr(player, "extra_steps", (2, [stat['simulator'].stat['round_idx'] + 1]))
+            setattr(player, "extra_steps", (lambda _: 2, (stat['simulator'].stat['round_idx'] + 1, 1)))
             logger.debug(f'{player} 发动技能, 下回合多执行 2 步!')
         
     
@@ -301,16 +316,29 @@ class FeiBiSkill(Skill):
         return forward_steps + 1
 
 
-# @register_skill
-# class KaTiXiYaSkill_AFTER_MOVE(Skill):
-#     """自身移动结束后,若处于最后一名,本场比赛剩余回合都会以60%概率额外前进2格.**在每回合移动后执行,每场比赛只能出发一次**"""
-#     _PRIORITY: SKILL_PRIORITY = SKILL_PRIORITY.AFTER_MOVE
-#     def __init__(self, probability: float=1.0) -> None:
-#         super().__init__(probability=probability)
-#         self.triggered = False  # 只能触发一次
+@register_skill
+class KaTiXiYaSkill(Skill):
+    """自身移动结束后,若处于最后一名,本场比赛剩余回合都会以60%概率额外前进2格.**在每回合移动后执行,每场比赛只能出发一次**"""
+    _PRIORITY: SKILL_PRIORITY = SKILL_PRIORITY.AFTER_MOVE
+    def __init__(self, probability: float=1.0) -> None:
+        super().__init__(probability=probability)
+        self.triggered = False  # 只能触发一次
 
-#     def _apply(self, player: Type['Player'], *args, **kwargs):
-#         ...
+    def _apply(self, player: Type['Player'], *args, **kwargs):
+        if self.triggered:
+            return
+        stat = kwargs['after_move_stat']
+        board: Board = kwargs['after_move_stat']['board']
+        self.triggered = board.get_last_player() == player
+        if self.triggered:
+            setattr(
+                player, "extra_steps", 
+                (
+                    lambda _: 2 if np.random.random() < 0.6 else 0, 
+                    (stat['simulator'].stat['round_idx'] + 1, np.inf)
+                )
+            )
+            logger.debug(f"{player} 发动技能! 本场比赛后续所有回合都有概率额外前进 2 格!")
 
 if __name__ == "__main__":
     print(SKILL_FACTORY)
