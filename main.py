@@ -57,5 +57,5 @@ if __name__ == "__main__":
         ],
     )
     # 指定次数
-    results = sim.simulate(n_runs=100)
+    results = sim.simulate(n_runs=200)
     

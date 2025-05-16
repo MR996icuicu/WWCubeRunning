@@ -168,6 +168,11 @@ class GameSimulator:
             )
             
             logger.debug(f"{player} 回合结束")
+            
+            # 检查是否已经到终点
+            if self.board.is_reached():
+                logger.info(f"{self.board.stacks[self.board.length]} 已经到达终点, 游戏结束!")
+                return
         
         # 最后调用每轮结束的hook
         for player in self.players:
