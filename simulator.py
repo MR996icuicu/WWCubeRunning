@@ -48,15 +48,7 @@ class GameSimulator:
         self.board: Board = Board(board_length)
         self.players: List[Player] = players or []
         self.stat: Dict[Any, Any] = {}
-    
-    def game_ends(self) -> bool:
-        """
-        判断当前游戏是否结束。
 
-        Returns:
-            布尔值，表示游戏是否结束。
-        """
-        return self.board.is_reached()
 
     def setup(self) -> None:
         """
@@ -138,6 +130,12 @@ class GameSimulator:
             self.stat['order'] = self.players[::-1]
         else:
             self.stat['order'] = np.random.permutation(self.players).tolist()
+            
+    def game_ends(self, ) -> bool:
+        if self.board.is_reached():
+            logger.debug(f"{self.board.stacks[self.board.length]} 已经到达终点, 游戏结束!")
+            return True
+        return False
         
     def play_each_round(self, ):
         """进行一轮游戏"""
@@ -171,10 +169,9 @@ class GameSimulator:
             
             logger.debug(f"{player} 回合结束")
             
-            # 检查是否已经到终点
-            if self.board.is_reached():
-                logger.info(f"{self.board.stacks[self.board.length]} 已经到达终点, 游戏结束!")
+            if self.game_ends():
                 return
+            
         
         # 最后调用每轮结束的hook
         for player in self.players:
