@@ -225,18 +225,19 @@ class GameSimulator:
                 if run % 1000 == 0:
                     logger.info(f"已完成 {run}/{n_runs} 次模拟")
 
-        results = [ (player, count / n_runs, player.score * count / n_runs) for player, count in win_counts.items() ]
+        results = [ (player, count / n_runs, player.score * count / n_runs + 0.8*(1-count/n_runs)) for player, count in win_counts.items() ]
         logger.info(f"模拟结束")
 
         console = Console()
         table = Table(title="模拟结果")
 
         table.add_column("角色", justify="center")
+        table.add_column("黑马值", justify='center')
         table.add_column("胜率", justify="center")
-        table.add_column("收益期望", justify="center")
+        table.add_column("收益期望(含保底)", justify="center")
 
         for player, win_rate, ret in results:
-            table.add_row(str(player), f"{win_rate:.4f}", f"{ret:.4f}")
+            table.add_row(str(player), f"{player.score:.4f}", f"{win_rate:.4f}", f"{ret:.4f}")
 
         console.print(table)
         return results

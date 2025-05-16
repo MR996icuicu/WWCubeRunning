@@ -47,12 +47,12 @@ if __name__ == "__main__":
             # Player("今汐", 1.1, [JinXiSkill(0.4)]),
             # Player("椿", 1.3, [ChunSkill(0.5)]),
             # Player("守岸人", 1.17, [ShouAnRenSkill(1.0)]),
-            Player('洛可可', 1.0, [LuoKeKeSkill(1.0)]),
-            Player('布兰特', 1.0, [BuLanTeSkill(1.0)]),
-            Player('赞妮', 1.0, [ZanNiSkill_ON_ROLL(1.0), ZanNiSkill_ON_MOVE(0.4)]),
-            Player('菲比', 1.0, [FeiBiSkill(0.5)]),
-            Player('坎特雷拉', 1.0, [KanTeLeiLaSkill(1.0)]),
-            Player('卡提希娅', 1.0, [KaTiXiYaSkill(1.0)]),    # 卡提希娅的技能概率比较特殊, 这里的1.0指处于最后一名时100%触发
+            Player('洛可可', 1.74, [LuoKeKeSkill(1.0)]),
+            Player('布兰特', 1.94, [BuLanTeSkill(1.0)]),
+            Player('赞妮',  1.23, [ZanNiSkill_ON_ROLL(1.0), ZanNiSkill_ON_MOVE(0.4)]),
+            Player('菲比',  1.34, [FeiBiSkill(0.5)]),
+            Player('坎特雷拉', 1.74, [KanTeLeiLaSkill(1.0)]),
+            Player('卡提希娅', 1.05, [KaTiXiYaSkill(1.0)]),    # 卡提希娅的技能概率比较特殊, 这里的1.0指处于最后一名时100%触发
         ],
     )
     # 指定次数
