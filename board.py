@@ -32,7 +32,17 @@ class Board(object):
     def is_reached(self, ):
         """是否已经有选手到了终点"""
         return len(self.stacks[self.length]) > 0
+
+    def get_last_position(self, ):
+        return min([p.position for p in self.players])
     
-    def get_last_player(self, ):
-        # 排在最后的player
-        return min(self.players, key=lambda p: p.position)
+    def is_last(self, player: Type['Player']) -> bool:
+        """判断player是否是最后一个(不一定是唯一最后一个)
+
+        Args:
+            player (Type[&#39;Player&#39;]): _description_
+
+        Returns:
+            bool: _description_
+        """
+        return player.position == self.get_last_position()

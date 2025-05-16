@@ -137,7 +137,7 @@ class KaKaLuoSkill(Skill):
             return
         board: Board = stat['board']
         forward_steps: int = stat['forward_steps']
-        if board.get_last_player() == player:
+        if board.is_last(player):
             stat['simulator'].stat['override_forward_steps'] = forward_steps + 3
             logger.debug(f'{player} 发动技能, 由于进度最后多执行3步!')
             return forward_steps + 3
@@ -329,7 +329,7 @@ class KaTiXiYaSkill(Skill):
             return
         stat = kwargs['after_move_stat']
         board: Board = kwargs['after_move_stat']['board']
-        self.triggered = board.get_last_player() == player
+        self.triggered = board.is_last(player)
         if self.triggered:
             setattr(
                 player, "extra_steps", 
