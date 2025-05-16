@@ -18,6 +18,7 @@ from typing import List, Dict, Any, Tuple
 from collections import defaultdict
 
 import numpy as np
+import random
 from rich.table import Table
 from rich.console import Console
 
@@ -63,6 +64,7 @@ class GameSimulator:
         """
         
         # player重置
+        self.players = random.sample(self.players, k=len(self.players))
         for player in self.players:
             player.reset()
         
@@ -211,7 +213,7 @@ class GameSimulator:
         win_counts: Dict[Player, float] = defaultdict(float)
 
         for run in range(1, n_runs + 1):
-
+            
             winner = self.play()
             win_counts[winner] += 1
 
